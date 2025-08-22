@@ -1,11 +1,13 @@
-import { Player, GameMode } from '@/lib/gameLogic';
+import { Player, GameMode, Difficulty } from '@/lib/gameLogic';
 
 interface GameInfoProps {
   currentPlayer: Player;
   winner: Player | null;
   isDraw: boolean;
   gameMode: GameMode;
+  difficulty: Difficulty;
   onModeSwitch: (mode: GameMode) => void;
+  onDifficultySwitch: (difficulty: Difficulty) => void;
   onReset: () => void;
 }
 
@@ -14,7 +16,9 @@ export default function GameInfo({
   winner, 
   isDraw, 
   gameMode, 
+  difficulty,
   onModeSwitch, 
+  onDifficultySwitch,
   onReset 
 }: GameInfoProps) {
   const getStatusMessage = () => {
@@ -57,6 +61,47 @@ export default function GameInfo({
           1v1
         </button>
       </div>
+
+      {gameMode === 'bot' && (
+        <div className="flex justify-center space-x-2">
+          <button
+            onClick={() => onDifficultySwitch('easy')}
+            className={`
+              px-3 py-1 rounded text-sm font-medium transition-colors
+              ${difficulty === 'easy' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }
+            `}
+          >
+            Easy
+          </button>
+                     <button
+             onClick={() => onDifficultySwitch('medium')}
+             className={`
+               px-3 py-1 rounded text-sm font-medium transition-colors
+               ${difficulty === 'medium' 
+                 ? 'bg-green-600 text-white' 
+                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+               }
+             `}
+           >
+             Normal
+           </button>
+          <button
+            onClick={() => onDifficultySwitch('hard')}
+            className={`
+              px-3 py-1 rounded text-sm font-medium transition-colors
+              ${difficulty === 'hard' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }
+            `}
+          >
+            Hard
+          </button>
+        </div>
+      )}
 
       <div className="text-center">
         <button

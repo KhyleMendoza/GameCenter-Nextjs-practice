@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Board, Player, GameMode, checkWinner, isBoardFull, makeBotMove } from '@/lib/gameLogic';
+import { Board, Player, GameMode, Difficulty, checkWinner, isBoardFull, makeBotMove } from '@/lib/gameLogic';
 import BoardComponent from './Board';
 import GameInfo from './GameInfo';
 
@@ -9,6 +9,7 @@ export default function Game() {
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
   const [gameMode, setGameMode] = useState<GameMode>('bot');
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [winner, setWinner] = useState<Player | null>(null);
   const [isDraw, setIsDraw] = useState(false);
 
@@ -43,7 +44,7 @@ export default function Game() {
   useEffect(() => {
     if (gameMode === 'bot' && currentPlayer === 'O' && !winner && !isDraw) {
       const timer = setTimeout(() => {
-        const botMove = makeBotMove(board, 'O');
+        const botMove = makeBotMove(board, 'O', difficulty);
         if (botMove !== -1) {
           handleCellClick(botMove);
         }
@@ -51,10 +52,15 @@ export default function Game() {
 
       return () => clearTimeout(timer);
     }
-  }, [currentPlayer, board, gameMode, winner, isDraw]);
+  }, [currentPlayer, board, gameMode, difficulty, winner, isDraw]);
 
   const switchGameMode = (mode: GameMode) => {
     setGameMode(mode);
+    resetGame();
+  };
+
+  const switchDifficulty = (newDifficulty: Difficulty) => {
+    setDifficulty(newDifficulty);
     resetGame();
   };
 
@@ -70,7 +76,9 @@ export default function Game() {
           winner={winner}
           isDraw={isDraw}
           gameMode={gameMode}
+          difficulty={difficulty}
           onModeSwitch={switchGameMode}
+          onDifficultySwitch={switchDifficulty}
           onReset={resetGame}
         />
         
