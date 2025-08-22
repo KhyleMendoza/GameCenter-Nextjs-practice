@@ -71,20 +71,94 @@ export const makeBotMove = (board: Board, botPlayer: Player, difficulty: Difficu
     }
   };
 
-  if (difficulty === 'easy') {
-    const randomIndex = Math.floor(Math.random() * availableMoves.length);
-    return availableMoves[randomIndex];
-  }
+  const findBestMoveScore = (board: Board, depth: number, isMaximizing: boolean): number => {
+    const winner = checkWinner(board);
+    if (winner === botPlayer) return 10 - depth;
+    if (winner === humanPlayer) return depth - 10;
+    if (isBoardFull(board)) return 0;
 
-  if (difficulty === 'medium') {
-    const shouldPlayPerfect = Math.random() < 0.7;
-    if (shouldPlayPerfect) {
-      return findBestMove(board, 0, true);
+    const availableMoves = getAvailableMoves(board);
+    
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (const move of availableMoves) {
+        const newBoard = [...board];
+        newBoard[move] = botPlayer;
+        const score = findBestMoveScore(newBoard, depth + 1, false);
+        if (score > bestScore) {
+          bestScore = score;
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (const move of availableMoves) {
+        const newBoard = [...board];
+        newBoard[move] = humanPlayer;
+        const score = findBestMoveScore(newBoard, depth + 1, true);
+        if (score < bestScore) {
+          bestScore = score;
+        }
+      }
+      return bestScore;
+    }
+  };
+
+  if (difficulty === 'easy') {
+    const shouldPlaySmart = Math.random() < 0.3;
+    if (shouldPlaySmart) {
+      let bestScore = -Infinity;
+      let bestMove = availableMoves[0];
+      
+      for (const move of availableMoves) {
+        const newBoard = [...board];
+        newBoard[move] = botPlayer;
+        const score = findBestMoveScore(newBoard, 0, false);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+      return bestMove;
     } else {
       const randomIndex = Math.floor(Math.random() * availableMoves.length);
       return availableMoves[randomIndex];
     }
   }
 
-  return findBestMove(board, 0, true);
+  if (difficulty === 'medium') {
+    const shouldPlayPerfect = Math.random() < 0.7;
+    if (shouldPlayPerfect) {
+      let bestScore = -Infinity;
+      let bestMove = availableMoves[0];
+      
+      for (const move of availableMoves) {
+        const newBoard = [...board];
+        newBoard[move] = botPlayer;
+        const score = findBestMoveScore(newBoard, 0, false);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+      return bestMove;
+    } else {
+      const randomIndex = Math.floor(Math.random() * availableMoves.length);
+      return availableMoves[randomIndex];
+    }
+  }
+
+  let bestScore = -Infinity;
+  let bestMove = availableMoves[0];
+  
+  for (const move of availableMoves) {
+    const newBoard = [...board];
+    newBoard[move] = botPlayer;
+    const score = findBestMoveScore(newBoard, 0, false);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = move;
+    }
+  }
+  return bestMove;
 };
