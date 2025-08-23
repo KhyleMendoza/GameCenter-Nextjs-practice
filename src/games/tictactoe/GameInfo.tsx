@@ -76,18 +76,18 @@ export default function GameInfo({
           >
             Easy
           </button>
-                     <button
-             onClick={() => onDifficultySwitch('medium')}
-             className={`
-               px-3 py-1 rounded text-sm font-medium transition-colors
-               ${difficulty === 'medium' 
-                 ? 'bg-green-600 text-white' 
-                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-               }
-             `}
-           >
-             Normal
-           </button>
+          <button
+            onClick={() => onDifficultySwitch('medium')}
+            className={`
+              px-3 py-1 rounded text-sm font-medium transition-colors
+              ${difficulty === 'medium' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }
+            `}
+          >
+            Normal
+          </button>
           <button
             onClick={() => onDifficultySwitch('hard')}
             className={`

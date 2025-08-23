@@ -5,7 +5,7 @@ import { Board, Player, GameMode, Difficulty, checkWinner, isBoardFull, makeBotM
 import BoardComponent from './Board';
 import GameInfo from './GameInfo';
 
-export default function Game() {
+export default function TicTacToe() {
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
   const [gameMode, setGameMode] = useState<GameMode>('bot');
@@ -65,7 +65,7 @@ export default function Game() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-96">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
           Tic Tac Toe
