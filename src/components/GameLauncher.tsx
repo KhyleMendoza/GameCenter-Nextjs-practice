@@ -30,7 +30,7 @@ const games: Game[] = [
     name: 'Connect Four',
     description: 'Drop tokens to connect four in a row',
     icon: '🔴',
-    available: false,
+    available: true,
     component: ConnectFour
   },
   {
