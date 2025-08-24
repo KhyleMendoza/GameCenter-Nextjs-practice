@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Board, Player, GameMode, Difficulty, checkWinner, isBoardFull, makeBotMove } from '@/lib/gameLogic';
 import BoardComponent from './Board';
 import GameInfo from './GameInfo';
+import WinnerModal from '@/components/WinnerModal';
 
 export default function TicTacToe() {
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
@@ -12,12 +13,14 @@ export default function TicTacToe() {
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [winner, setWinner] = useState<Player | null>(null);
   const [isDraw, setIsDraw] = useState(false);
+  const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   const resetGame = () => {
     setBoard(Array(9).fill(null));
     setCurrentPlayer('X');
     setWinner(null);
     setIsDraw(false);
+    setShowWinnerModal(false);
   };
 
   const handleCellClick = (index: number) => {
@@ -30,11 +33,13 @@ export default function TicTacToe() {
     const newWinner = checkWinner(newBoard);
     if (newWinner) {
       setWinner(newWinner);
+      setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
       return;
     }
 
     if (isBoardFull(newBoard)) {
       setIsDraw(true);
+      setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
       return;
     }
 
@@ -88,6 +93,19 @@ export default function TicTacToe() {
           winner={winner}
         />
       </div>
+
+      {/* Winner Modal */}
+      <WinnerModal
+        isOpen={showWinnerModal}
+        winner={winner}
+        isDraw={isDraw}
+        onNewGame={() => {
+          resetGame();
+          setShowWinnerModal(false);
+        }}
+        onClose={() => setShowWinnerModal(false)}
+        gameType="tictactoe"
+      />
     </div>
   );
 }

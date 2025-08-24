@@ -39,3 +39,4 @@ export default function ConnectFourCell({ player, onClick, isWinningCell = false
     </button>
   );
 }
+

@@ -14,6 +14,7 @@ import {
 } from '@/lib/gameLogic';
 import ConnectFourBoard from './ConnectFourBoard';
 import ConnectFourGameInfo from './ConnectFourGameInfo';
+import WinnerModal from '@/components/WinnerModal';
 
 export default function ConnectFour() {
   const [board, setBoard] = useState<BoardType>(createConnectFourBoard());
@@ -25,6 +26,7 @@ export default function ConnectFour() {
   const [moveCount, setMoveCount] = useState(0);
   const [isThinking, setIsThinking] = useState(false);
   const [winningCells, setWinningCells] = useState<{ row: number; col: number }[]>([]);
+  const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   const resetGame = () => {
     setBoard(createConnectFourBoard());
@@ -34,6 +36,7 @@ export default function ConnectFour() {
     setMoveCount(0);
     setIsThinking(false);
     setWinningCells([]);
+    setShowWinnerModal(false);
   };
 
   const handleModeChange = (mode: ConnectFourGameMode) => {
@@ -133,11 +136,13 @@ export default function ConnectFour() {
     if (gameWinner) {
       setWinner(gameWinner);
       setWinningCells(findWinningCells(newBoard, gameWinner));
+      setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
       return;
     }
 
     if (isConnectFourBoardFull(newBoard)) {
       setIsDraw(true);
+      setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
       return;
     }
 
@@ -163,8 +168,10 @@ export default function ConnectFour() {
             if (gameWinner) {
               setWinner(gameWinner);
               setWinningCells(findWinningCells(newBoard, gameWinner));
+              setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
             } else if (isConnectFourBoardFull(newBoard)) {
               setIsDraw(true);
+              setTimeout(() => setShowWinnerModal(true), 500); // Show modal after a brief delay
             } else {
               setCurrentPlayer('red');
             }
@@ -210,6 +217,19 @@ export default function ConnectFour() {
           />
         </div>
       </div>
+
+      {/* Winner Modal */}
+      <WinnerModal
+        isOpen={showWinnerModal}
+        winner={winner}
+        isDraw={isDraw}
+        onNewGame={() => {
+          resetGame();
+          setShowWinnerModal(false);
+        }}
+        onClose={() => setShowWinnerModal(false)}
+        gameType="connect4"
+      />
     </div>
   );
 }
