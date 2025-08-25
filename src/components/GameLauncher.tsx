@@ -4,8 +4,9 @@ import { useState } from 'react';
 import TicTacToe from '@/games/tictactoe/TicTacToe';
 import ConnectFour from '@/games/connect-four/ConnectFour';
 import Snake from '@/games/snake/Snake';
+import Tetris from '@/games/tetris/Tetris';
 
-export type GameType = 'tictactoe' | 'connect-four' | 'snake';
+export type GameType = 'tictactoe' | 'connect-four' | 'snake' | 'tetris';
 
 interface Game {
   id: GameType;
@@ -40,6 +41,14 @@ const games: Game[] = [
     icon: '🐍',
     available: false,
     component: Snake
+  },
+  {
+    id: 'tetris',
+    name: 'Tetris',
+    description: 'Classic block-stacking puzzle game',
+    icon: '🧩',
+    available: true,
+    component: Tetris
   }
 ];
 
