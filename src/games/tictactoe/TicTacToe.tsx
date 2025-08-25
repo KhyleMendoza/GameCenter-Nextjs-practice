@@ -57,7 +57,7 @@ export default function TicTacToe() {
 
       return () => clearTimeout(timer);
     }
-  }, [currentPlayer, board, gameMode, difficulty, winner, isDraw]);
+  }, [currentPlayer, board, gameMode, difficulty, winner, isDraw, handleCellClick]);
 
   const switchGameMode = (mode: GameMode) => {
     setGameMode(mode);

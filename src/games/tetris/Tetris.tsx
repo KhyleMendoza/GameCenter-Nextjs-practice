@@ -20,10 +20,8 @@ import {
 
 export default function Tetris() {
   const [gameState, setGameState] = useState<GameState>(createInitialGameState());
-  const [lastDrop, setLastDrop] = useState<number>(Date.now());
   const [showGameOverModal, setShowGameOverModal] = useState(false);
-  const gameLoopRef = useRef<number>();
-  const dropTimerRef = useRef<NodeJS.Timeout>();
+  const dropTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Move piece
   const movePiece = useCallback((deltaX: number, deltaY: number) => {
@@ -131,7 +129,7 @@ export default function Tetris() {
       }
 
       let dropDistance = 0;
-      let testPiece = { ...prevState.currentPiece };
+      const testPiece = { ...prevState.currentPiece };
 
       // Find how far the piece can drop
       while (isValidPosition(prevState.board, {
@@ -178,7 +176,6 @@ export default function Tetris() {
   // Reset game
   const resetGame = useCallback(() => {
     setGameState(createInitialGameState());
-    setLastDrop(Date.now());
     setShowGameOverModal(false);
   }, []);
 
