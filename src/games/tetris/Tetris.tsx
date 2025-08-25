@@ -21,6 +21,7 @@ import {
 export default function Tetris() {
   const [gameState, setGameState] = useState<GameState>(createInitialGameState());
   const [lastDrop, setLastDrop] = useState<number>(Date.now());
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
   const gameLoopRef = useRef<number>();
   const dropTimerRef = useRef<NodeJS.Timeout>();
 
@@ -178,41 +179,43 @@ export default function Tetris() {
   const resetGame = useCallback(() => {
     setGameState(createInitialGameState());
     setLastDrop(Date.now());
+    setShowGameOverModal(false);
   }, []);
 
-  // Keyboard controls
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (gameState.gameOver) return;
 
-      switch (event.key) {
-        case 'ArrowLeft':
+      switch (event.key.toLowerCase()) {
+        case 'arrowleft':
+        case 'a':
           event.preventDefault();
           movePiece(-1, 0);
           break;
-        case 'ArrowRight':
+        case 'arrowright':
+        case 'd':
           event.preventDefault();
           movePiece(1, 0);
           break;
-        case 'ArrowDown':
+        case 'arrowdown':
+        case 's':
           event.preventDefault();
           movePiece(0, 1);
           break;
-        case 'ArrowUp':
+        case 'arrowup':
+        case 'w':
           event.preventDefault();
           rotatePieceHandler();
           break;
-        case ' ': // Spacebar for hard drop
+        case ' ':
           event.preventDefault();
           hardDrop();
           break;
         case 'p':
-        case 'P':
           event.preventDefault();
           togglePause();
           break;
         case 'r':
-        case 'R':
           if (gameState.gameOver) {
             event.preventDefault();
             resetGame();
@@ -247,7 +250,12 @@ export default function Tetris() {
     };
   }, [gameState.level, gameState.gameOver, gameState.paused, dropPiece]);
 
-  // Get display board
+  useEffect(() => {
+    if (gameState.gameOver) {
+      setTimeout(() => setShowGameOverModal(true), 500);
+    }
+  }, [gameState.gameOver]);
+
   const displayBoard = getBoardWithPiece(gameState.board, gameState.currentPiece);
 
   return (
@@ -258,48 +266,56 @@ export default function Tetris() {
         </h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          {/* Column 1: Next Piece & Tips */}
           <div className="order-2 lg:order-1 flex flex-col gap-4">
-            {/* Next Piece */}
             <TetrisPreview 
               nextPiece={gameState.nextPiece}
               title="Next Piece"
             />
             
-            {/* Controls Help */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-bold text-gray-800 mb-3 text-lg">🎮 Controls</h3>
               <div className="space-y-2 text-sm text-gray-700">
                 <div className="flex items-center gap-2">
-                  <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">←→</span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">←→</span>
+                    <span className="text-gray-500 text-xs">or</span>
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">AD</span>
+                  </div>
                   <span>Move</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">↓</span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">↓</span>
+                    <span className="text-gray-500 text-xs">or</span>
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">S</span>
+                  </div>
                   <span>Soft Drop</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">↑</span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">↑</span>
+                    <span className="text-gray-500 text-xs">or</span>
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">W</span>
+                  </div>
                   <span>Rotate</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">Space</span>
+                  <span className="bg-white px-2 py-1 rounded font-mono text-xs">Space</span>
                   <span>Hard Drop</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">P</span>
+                  <span className="bg-white px-2 py-1 rounded font-mono text-xs">P</span>
                   <span>Pause</span>
                 </div>
                 {gameState.gameOver && (
                   <div className="flex items-center gap-2">
-                    <span className="bg-white px-2 py-1 rounded font-mono text-xs min-w-[50px] text-center">R</span>
+                    <span className="bg-white px-2 py-1 rounded font-mono text-xs">R</span>
                     <span>Restart</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Game Tips */}
             <div className="bg-blue-50 rounded-lg p-4">
               <h4 className="font-bold text-blue-800 mb-3 text-lg">💡 Pro Tips</h4>
               <div className="text-sm text-blue-700 space-y-2">
@@ -312,7 +328,6 @@ export default function Tetris() {
             </div>
           </div>
 
-          {/* Column 2: Game Board */}
           <div className="order-1 lg:order-2 flex justify-center">
             <TetrisBoard 
               board={displayBoard} 
@@ -321,7 +336,6 @@ export default function Tetris() {
             />
           </div>
           
-          {/* Column 3: Game Stats & Controls */}
           <div className="order-3 lg:order-3 flex flex-col gap-4">
             <TetrisControls 
               score={gameState.score}
@@ -333,7 +347,6 @@ export default function Tetris() {
               onReset={resetGame}
             />
 
-            {/* Additional Stats */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-bold text-gray-800 mb-3 text-lg">📊 Performance</h3>
               <div className="space-y-3">
@@ -368,37 +381,63 @@ export default function Tetris() {
           </div>
         </div>
         
-        {/* Game Over Notification */}
-        {gameState.gameOver && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-            <div className="bg-white rounded-xl p-6 shadow-2xl border-4 border-red-500 animate-pulse">
-              <h2 className="text-2xl font-bold text-red-600 mb-3 text-center">🎮 Game Over!</h2>
-              <div className="text-center mb-4">
-                <p className="text-lg text-gray-700 mb-1">Final Score: <span className="font-bold text-blue-600">{gameState.score.toLocaleString()}</span></p>
-                <p className="text-md text-gray-600">Lines Cleared: <span className="font-bold text-green-600">{gameState.lines}</span></p>
+        {gameState.paused && !gameState.gameOver && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+              <div className="bg-yellow-500 text-white p-6 text-center">
+                <div className="text-6xl mb-4">⏸️</div>
+                <h2 className="text-2xl font-bold">Game Paused</h2>
               </div>
-              <button
-                onClick={resetGame}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                🔄 Play Again
-              </button>
+              <div className="p-6 text-center">
+                <p className="text-gray-700 text-lg mb-6">Press P to continue playing</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={togglePause}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    ▶️ Resume
+                  </button>
+                  <button
+                    onClick={resetGame}
+                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    🔄 Restart
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
-        
-        {/* Pause Notification */}
-        {gameState.paused && !gameState.gameOver && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40">
-            <div className="bg-white rounded-xl p-6 shadow-2xl border-4 border-yellow-500">
-              <h2 className="text-2xl font-bold text-yellow-600 mb-3 text-center">⏸️ Paused</h2>
-              <p className="text-md text-gray-600 mb-4 text-center">Press P to continue</p>
-              <button
-                onClick={togglePause}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-              >
-                ▶️ Resume
-              </button>
+
+        {showGameOverModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+              <div className="bg-red-500 text-white p-6 text-center">
+                <div className="text-6xl mb-4">🎮</div>
+                <h2 className="text-2xl font-bold">Game Over!</h2>
+              </div>
+              <div className="p-6 text-center">
+                <p className="text-gray-700 text-lg mb-2">Final Score: <span className="font-bold text-blue-600">{gameState.score.toLocaleString()}</span></p>
+                <p className="text-gray-700 text-lg mb-6">Lines Cleared: <span className="font-bold text-green-600">{gameState.lines}</span></p>
+                <div className="text-2xl mb-4 text-gray-400">🎉</div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      resetGame();
+                      setShowGameOverModal(false);
+                    }}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    🔄 New Game
+                  </button>
+                  <button
+                    onClick={() => setShowGameOverModal(false)}
+                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    ✕ Close
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

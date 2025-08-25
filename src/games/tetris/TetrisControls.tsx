@@ -23,7 +23,6 @@ export default function TetrisControls({
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="font-bold text-gray-800 mb-4 text-lg">Game Stats</h3>
       
-      {/* Score Display Grid */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white rounded-lg p-3 text-center shadow-sm">
           <div className="text-blue-600 font-bold text-xl">{score.toLocaleString()}</div>
@@ -46,7 +45,6 @@ export default function TetrisControls({
         </div>
       </div>
       
-      {/* Level Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-600 mb-2">
           <span>Level Progress</span>
@@ -66,7 +64,6 @@ export default function TetrisControls({
         </div>
       </div>
       
-      {/* Control Buttons */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         {!gameOver && (
           <button

@@ -32,7 +32,6 @@ const getCellEffect = (cellValue: CellValue): string => {
 export default function TetrisBoard({ board, gameOver, paused }: TetrisBoardProps) {
   return (
     <div className="relative">
-      {/* Board Container */}
       <div 
         className={`
           grid grid-cols-10 gap-[1px] p-2 bg-gray-800 rounded-lg border-2 border-gray-700
@@ -63,7 +62,6 @@ export default function TetrisBoard({ board, gameOver, paused }: TetrisBoardProp
         )}
       </div>
       
-      {/* Game State Indicators */}
       {gameOver && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-lg shadow-lg">
